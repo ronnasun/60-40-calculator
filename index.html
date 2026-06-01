@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ไทยช่วยไทยพลัส</title>
+<link rel="manifest" href="manifest.json">
+<style>
+body{font-family:sans-serif;background:#f5f7fa;margin:0;padding:20px}
+.container{max-width:500px;margin:auto;background:#fff;padding:20px;border-radius:15px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+h1{text-align:center}
+input{width:100%;box-sizing:border-box;padding:14px;margin:8px 0 15px;font-size:18px}
+button{width:100%;padding:15px;border:none;border-radius:10px;background:#0066ff;color:white;font-size:18px}
+.result{margin-top:20px;padding:15px;background:#eef7ff;border-radius:10px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>ไทยช่วยไทยพลัส</h1>
+<label>ราคาสินค้ารวม</label>
+<input id="total" type="number" step="0.01">
+<label>รัฐจ่าย</label>
+<input id="gov" type="number" step="0.01">
+<label>เราจ่าย</label>
+<input id="user" type="number" step="0.01">
+<button onclick="clearAll()">ล้างข้อมูล</button>
+<div class="result">
+รัฐช่วย 60% สูงสุด 200 บาท/วัน
+</div>
+</div>
+<script>
+const total=document.getElementById('total');
+const gov=document.getElementById('gov');
+const user=document.getElementById('user');
+let updating=false;
+
+function calculateFromTotal(){
+if(updating)return; updating=true;
+let t=parseFloat(total.value);
+if(isNaN(t)){gov.value='';user.value='';updating=false;return;}
+let g=Math.min(t*0.6,200);
+let u=t-g;
+gov.value=g.toFixed(2);
+user.value=u.toFixed(2);
+updating=false;
+}
+function calculateFromGov(){
+if(updating)return; updating=true;
+let g=parseFloat(gov.value);
+if(isNaN(g)){total.value='';user.value='';updating=false;return;}
+if(g>200)g=200;
+let t=g/0.6;
+let u=t-g;
+total.value=t.toFixed(2);
+user.value=u.toFixed(2);
+updating=false;
+}
+function calculateFromUser(){
+if(updating)return; updating=true;
+let u=parseFloat(user.value);
+if(isNaN(u)){total.value='';gov.value='';updating=false;return;}
+let t=u/0.4;
+if(t<=333.33){
+let g=t*0.6;
+total.value=t.toFixed(2);
+gov.value=g.toFixed(2);
+}else{
+let g=200;
+t=u+g;
+total.value=t.toFixed(2);
+gov.value=g.toFixed(2);
+}
+updating=false;
+}
+function clearAll(){total.value='';gov.value='';user.value='';}
+total.addEventListener('input',calculateFromTotal);
+gov.addEventListener('input',calculateFromGov);
+user.addEventListener('input',calculateFromUser);
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
+</script>
+</body>
+</html>
